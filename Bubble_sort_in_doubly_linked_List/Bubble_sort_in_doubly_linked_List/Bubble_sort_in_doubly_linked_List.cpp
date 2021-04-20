@@ -1,219 +1,218 @@
 ﻿#include <iostream>
 #include <ctime>
 
-using namespace std;
-
-
 template<typename T>
-class List {
+class TNode 
+{
 public:
-    List();
-    ~List();
-
-    void add(T nData);
-    void buble_sort();
-    void show();
-
-    template<typename T>
-    class SNode {
-    public:
-        T nData;
-        SNode* pPrev, * pNext;
-        SNode(T nData = T(), SNode* pPrev = nullptr,
-            SNode* pNext = nullptr)
-        {
-            this->nData = nData;
-            this->pPrev = pPrev;
-            this->pNext = pNext;
-        }
-    };
-
-    void swap_pointer_for_two_elements(SNode <T>* pFirst, SNode <T>* pSecond);
-    SNode <T>* pHead;
+	T nData;
+	TNode* pPrev, * pNext;
+	TNode(T nData)
+	{
+		this->nData = nData;
+		this->pPrev = nullptr;
+		this->pNext = nullptr;
+	}
 };
 
 template<typename T>
-List<T>::List() {
-    pHead = nullptr;
+class TList 
+{
+private:
+    TNode <T>* m_pHead;
+
+public:
+    TList();
+    ~TList();
+
+    void InsertToTail(T nData);
+
+    void bubbleSort();
+
+    void DisplayList();
+
+    void SwapPointers(TNode <T>* pFirst, TNode <T>* pSecond);
+};
+
+template<typename T>
+TList<T>::TList() 
+{
+    m_pHead = nullptr;
 }
 
 template<typename T>
-List<T>::~List() {
-    while (pHead) {
-        SNode<T>* ptemp = pHead;
-        pHead = pHead->pNext;
+TList<T>::~TList() 
+{
+    while (m_pHead) 
+    {
+        TNode<T>* ptemp = m_pHead;
+        m_pHead = m_pHead->pNext;
         delete ptemp;
     }
 }
 
 //функция добавления элемента в конец списка
 template<typename T>
-void List<T>::add(T nData)
+void TList<T>::InsertToTail(T nData)
 {
-    if (pHead == nullptr) {
-        pHead = new SNode<T>(nData);
-    }
-    else {
-        SNode<T>* pCurrent = pHead;
 
-        while (pCurrent->pNext != nullptr) {
+    if (m_pHead == nullptr) 
+    {
+        m_pHead = new TNode<T>(nData);
+    }
+
+    else 
+    {
+
+        TNode<T>* pCurrent = m_pHead;
+
+        while (pCurrent->pNext != nullptr) 
+        {
             pCurrent = pCurrent->pNext;
         }
-        pCurrent->pNext = new SNode<T>(nData);
+
+        pCurrent->pNext = new TNode<T>(nData);
+
         pCurrent->pNext->pPrev = pCurrent;
     }
 }
 
 //функция реализующая сортировку методом пузырька в двусвязном списке, переставляя указатели
 template<typename T>
-void List<T>::buble_sort() {
+void TList<T>::bubbleSort() 
+{
+
+    if (!m_pHead && !m_pHead->pNext) return;
+
     //размер списка
     int nSize = 0;
-    //проверка списка на отсортированность
-    bool bCheck = true;
 
-    SNode<T>* pTemp = pHead;
-    while (pTemp) {
+
+    TNode<T>* pTemp = m_pHead;
+
+    while (pTemp) 
+    {
         pTemp = pTemp->pNext;
         nSize++;
     }
-    if (nSize == 1) {
-        cout << "Для списка состоящего из одного элемента, сортировка не возможна." << endl;
-        return;
-    }
 
-    //если больше двух то true, иначе false
+    TNode<T>* pCurrent = m_pHead;
 
-    SNode<T>* pFirst = pHead;
-    SNode<T>* pSecond = pFirst->pNext;
+    for (int nCounter = 0; nCounter < nSize; nCounter++ )
+    {
 
-    //смысл переменной nCounter_in_cycle 
-    //в следующем, после каждого прохода, 
-    //один элемент абсолютно точно занимает 
-    //своё место, в моём случае,
-    //это элемент с максимальным значением, 
-    //следовательно, на следующей итерации я могу
-    //смотреть до элемента предпоследнего элемента
-    //затем до элемента который был перед предпоследним
-    //и так далее
-    int nCounter_in_cycle = 1;
+        bool bSorted = true;
 
-    //как только bCheck после выполнения 
-    //сортировки примет значение false,
-    //то список отсортирован
-    while (bCheck) {
-        bCheck = false;
-        //Здесь nSize - nCounter_in_cycle, это 
-        //оптимизация количества элементов которые
-        //нужно просматривать
-        for (int i = 0; i < nSize - nCounter_in_cycle; i++) {
-            if ((pFirst->nData) > (pSecond->nData)) {
-                swap_pointer_for_two_elements(pFirst, pSecond);
+        for (int i = 0; i < nSize - nCounter - 1; i++) 
+        {
+
+            TNode<T>* pCurrentNext = pCurrent->pNext;
+
+            if ((pCurrent->nData) > (pCurrentNext->nData)) 
+            {
+
+                SwapPointers(pCurrent, pCurrentNext);
+
                 //перестановка произошла
-                bCheck = true;
+                bSorted = false;
+
+                if (pCurrent == m_pHead)
+                {
+                    m_pHead = pCurrentNext;
+                }
             }
-            else {
-                pFirst = pFirst->pNext;
+
+            else 
+            {
+                pCurrent = pCurrent->pNext;
             }
-            pSecond = pFirst->pNext;
+
         }
 
-        // Сдвигаем голову в начало списка
-        while (pHead->pPrev) {
-            pHead = pHead->pPrev;
-        }
+        if (bSorted) break;
 
-        //Начинаем обход с головы списка
-        pFirst = pHead;
-        pSecond = pFirst->pNext;
-        //инкерминтируем счётчик
-        nCounter_in_cycle++;
+        pCurrent = m_pHead;
     }
 }
 
 template<typename T>
-void List<T>::show() {
-    SNode<T>* pTemp = pHead;
-    if (!(pTemp->pPrev) && !(pTemp->pNext)) {
-        cout << "NULL <--- [" << pTemp->nData << "] ---> NULL" << endl << endl;
-    }
-    else {
-        while (pTemp->pNext) {
+void TList<T>::DisplayList() 
+{
 
-            //вывод для первого элемента
-            if (!(pTemp->pPrev) && pTemp->pNext) {
-                cout << "NULL <--- [" << pTemp->nData << "] <--->";
-            }
+    TNode<T>* pCurrent = m_pHead;
 
-            //вывод для всех элементов начиная со второго, кроме последнего
-            else {
-                cout << " [" << pTemp->nData << "] <--->";
-            }
-            pTemp = pTemp->pNext;
-        }
-        //вывод последнего элемента
-        cout << " [" << pTemp->nData << "] ---> NULL";
-        cout << endl << endl;
+    while (pCurrent)
+    {
+        std::cout << pCurrent->nData << " ";
+        pCurrent = pCurrent->pNext;
     }
 
+    std::cout << std::endl;
 }
 
-//функция меняющая указатели, вызывается
-//из функции buble_sort
 template<typename T>
-void List<T>::swap_pointer_for_two_elements(SNode<T>* pFirst, SNode<T>* pSecond) {
-    //Тут стандартная смена указателей, 
-    //в случае когда два элемента
-    //требуют сортировки
-    pSecond->pPrev = pFirst->pPrev;
-    pFirst->pPrev = pSecond;
-    pFirst->pNext = pSecond->pNext;
-    pSecond->pNext = pFirst;
+void TList<T>::SwapPointers(TNode<T>* pCurrent, TNode<T>* pCurrentNext) 
+{
 
-    //для первого элемента
-    if (!(pSecond->pPrev) && pFirst->pNext) {
-        pFirst->pNext->pPrev = pFirst;
+    pCurrentNext->pPrev = pCurrent->pPrev;
+    pCurrent->pPrev = pCurrentNext;
+    pCurrent->pNext = pCurrentNext->pNext;
+    pCurrentNext->pNext = pCurrent;
+
+    if (!(pCurrentNext->pPrev) && pCurrent->pNext) 
+    {
+        pCurrent->pNext->pPrev = pCurrent;
     }
 
-    //для последнего
-    else if (!(pFirst->pNext) && pSecond->pPrev) {
-        pSecond->pPrev->pNext = pSecond;
+    else if (!(pCurrent->pNext) && pCurrentNext->pPrev) 
+    {
+        pCurrentNext->pPrev->pNext = pCurrentNext;
     }
 
-    //для оставшихся
-    else if (pFirst->pNext && pSecond->pPrev) {
-        pFirst->pNext->pPrev = pFirst;
-        pSecond->pPrev->pNext = pSecond;
+    else if (pCurrent->pNext && pCurrentNext->pPrev) 
+    {
+        pCurrent->pNext->pPrev = pCurrent;
+        pCurrentNext->pPrev->pNext = pCurrentNext;
     }
 
 }
 
 int main() {
+    using namespace std;
+    
     setlocale(LC_ALL, "ru");
-    List<int> CList;
-    int nCount;				//количество элементов в списке
-    srand(time(NULL));
-    try {
+
+    TList<int> list;
+
+    int nCount;
+
+    srand((unsigned int)time(NULL));
+
+    try 
+    {
         cout << "Введите количество элементов списка:\n";
         cin >> nCount;
         if (nCount < 1) throw 1;
     }
-    catch (int nCount) {
+    catch (int nCount) 
+    {
         cout << "Введены неправильные данные.\n";
         return 0;
     }
     for (int i = 0; i < nCount; i++)
     {
-        //создаем элементы списка и заполняем их
-        CList.add(rand() % 200 - 100);
+        list.InsertToTail(rand() % 200 - 100);
     }
-    cout << "Неотсортированный список:" << endl << endl;
-    CList.show();
-    CList.buble_sort();
 
-    if (nCount > 1) {
+    cout << "Неотсортированный список:" << endl << endl;
+    list.DisplayList();
+
+    list.bubbleSort();
+
+    if (nCount > 1) 
+    {
         cout << "Отсортированный список:" << endl << endl;
-        CList.show();
+        list.DisplayList();
     }
 
 }
