@@ -30,12 +30,10 @@ public:
 
     void swap_pointer_for_two_elements(SNode <T>* pFirst, SNode <T>* pSecond);
     SNode <T>* pHead;
-    int nSize;
 };
 
 template<typename T>
 List<T>::List() {
-    nSize = 0;
     pHead = nullptr;
 }
 
@@ -64,7 +62,6 @@ void List<T>::add(T nData)
         pCurrent->pNext = new SNode<T>(nData);
         pCurrent->pNext->pPrev = pCurrent;
     }
-    nSize++;
 }
 
 //функция реализующая сортировку методом пузырька в двусвязном списке, переставляя указатели
