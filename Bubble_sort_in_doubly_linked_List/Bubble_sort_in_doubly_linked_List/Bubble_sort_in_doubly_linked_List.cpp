@@ -31,7 +31,7 @@ public:
 
     void DisplayList();
 
-    void SwapPointers(TNode <T>* pFirst, TNode <T>* pSecond);
+    void SwapPointers(TNode <T>* pCurrent, TNode <T>* pCurrentNext);
 };
 
 template<typename T>
@@ -101,7 +101,7 @@ void TList<T>::bubbleSort()
     for (int nCounter = 0; nCounter < nSize; nCounter++ )
     {
 
-        bool bSorted = true;
+        bool bSorted = false;
 
         for (int i = 0; i < nSize - nCounter - 1; i++) 
         {
@@ -114,7 +114,7 @@ void TList<T>::bubbleSort()
                 SwapPointers(pCurrent, pCurrentNext);
 
                 //перестановка произошла
-                bSorted = false;
+                bSorted = true;
 
                 if (pCurrent == m_pHead)
                 {
@@ -129,7 +129,7 @@ void TList<T>::bubbleSort()
 
         }
 
-        if (bSorted) break;
+        if (!bSorted) break;
 
         pCurrent = m_pHead;
     }
