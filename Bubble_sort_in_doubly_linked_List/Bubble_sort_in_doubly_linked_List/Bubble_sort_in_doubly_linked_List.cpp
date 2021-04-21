@@ -159,22 +159,15 @@ void TList<T>::SwapPointers(TNode<T>* pCurrent, TNode<T>* pCurrentNext)
     pCurrent->pNext = pCurrentNext->pNext;
     pCurrentNext->pNext = pCurrent;
 
-    if (!(pCurrentNext->pPrev) && pCurrent->pNext) 
+    if (pCurrent->pNext) 
     {
         pCurrent->pNext->pPrev = pCurrent;
     }
 
-    else if (!(pCurrent->pNext) && pCurrentNext->pPrev) 
+    if (pCurrentNext->pPrev) 
     {
         pCurrentNext->pPrev->pNext = pCurrentNext;
     }
-
-    else if (pCurrent->pNext && pCurrentNext->pPrev) 
-    {
-        pCurrent->pNext->pPrev = pCurrent;
-        pCurrentNext->pPrev->pNext = pCurrentNext;
-    }
-
 }
 
 int main() {
